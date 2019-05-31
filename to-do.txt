@@ -1,1 +1,0 @@
-Barcos estão se sobrepondo, tentei corrigir com os IFs das linhas 70 e 85, porém sem sucesso no caso do 85, testar 70
