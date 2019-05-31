@@ -39,9 +39,9 @@ function insertBoat() {
 
 function returnOrientation() {
     switch (Math.round(Math.random())) {
-        case 1:
+        case 0:
             return 'H';     //horizontal
-        case 2:
+        case 1:
             return 'V';     //vertical
     }
 }
@@ -61,12 +61,12 @@ function returnStartPosition(boatLenght, orientation) {
         randomPosition = returnRandomPosition();
         if (orientation === 'H') {
             rowFirstPosition = Math.floor(randomPosition / tableWidth);
-            rowLastPosition = Math.floor((randomPosition + boatLenght) / tableWidth);
+            rowLastPosition = Math.floor(((randomPosition + boatLenght)-1) / tableWidth);
             lastPosition = randomPosition+boatLenght;
             if (rowFirstPosition === rowLastPosition && lastPosition <= (tableHeight*tableWidth)-1) { //Verifica se está na mesma linha e se a ultima posição está dentro do tabuleiro
                 positionFound = true;
                 let pos = 0;
-                for (let i = randomPosition; i <= (randomPosition+boatLenght); i++){
+                for (let i = randomPosition; i < (randomPosition+boatLenght); i++){
                     if(positionsOcuppied.includes(i)){
                         positionFound = false;
                     }
@@ -91,7 +91,7 @@ function returnStartPosition(boatLenght, orientation) {
             }
         }
     } while (positionFound === false) ;
-    console.log("posições definidas " + positions);
+    console.log("posições definidas " + positions + orientation);
     return positions;
 }
 
