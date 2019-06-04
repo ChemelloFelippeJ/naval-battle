@@ -1,17 +1,17 @@
 let tableArray = [];
 let positionsOcuppied = [];
-let tableHeight = 15;
-let tableWidth = 15;
+let tableHeight = 5;
+let tableWidth = 5;
 let digits = ((tableWidth * tableHeight) - 1).toString().length;
 console.log(digits);
 const debugg = true;
 const lenghtBoats = [1, 3, 5];
 
+
 function start() {
     createTableStructure();
-    insertBoat();
+    insertBoatInRandomPositions();
     renderTable();
-
 }
 
 function createTableStructure() {
@@ -23,15 +23,52 @@ function createTableStructure() {
     // console.log("Water: " + water + "\nBoat: " + boat + "\nShot: " + shot + "\nFire: " + fire);
 }
 
-function insertBoat() {
+function selectBoatPositions() {
+    let html = '<table>';
+
+    for (let row = 0; row < tableHeight; row++) {
+        html += '<tr>';
+
+        for (let column = 0; column < tableWidth; column++) {
+            const spaceIndex = column + (row * tableWidth);
+
+            html += '<td>';
+            html += `<input type="checkbox" name="boat" value="${spaceIndex}">`;
+            html += '</td>';
+        }
+        html += '</tr>';
+    }
+    html += '</table>';
+    document.querySelector('#tableCanvas').innerHTML = html;
+
+    const sendButtonHtml = `<input type="button" value="Enviar Seleção!" onclick="insertBoatInPredefinedPosition()">`;
+
+    document.querySelector('#sendButton').innerHTML = sendButtonHtml;
+}
+
+function insertBoatInPredefinedPosition() {
+    let boatPositions = document.getElementsByName('boat');
+
+    for (let i = 0; i < boatPositions.length; i++){
+        if(boatPositions[i].checked){
+            tableArray[i] = 'B';
+        }
+    }
+}
+
+function shot() {
+
+}
+
+function insertBoatInRandomPositions() {
     for (let i = 0; i < lenghtBoats.length; i++) {
         const orientation = returnOrientation();
         const boatPositions = returnStartPosition(lenghtBoats[i], orientation);
 
 
-        for(let j = 0; j < boatPositions.length; j++){
+        for (let j = 0; j < boatPositions.length; j++) {
             tableArray[boatPositions[j]] = 'B';
-            positionsOcuppied.push(tableArray[boatPositions[j]])
+            positionsOcuppied.push(boatPositions[j]);
         }
 
     }
@@ -48,7 +85,7 @@ function returnOrientation() {
 
 function returnStartPosition(boatLenght, orientation) {
     function returnRandomPosition() {
-        return Math.round(Math.random().toFixed(digits) * Math.pow(10,digits));
+        return Math.round(Math.random().toFixed(digits) * Math.pow(10, digits));
     }
 
     let randomPosition, lastPosition;
@@ -61,37 +98,38 @@ function returnStartPosition(boatLenght, orientation) {
         randomPosition = returnRandomPosition();
         if (orientation === 'H') {
             rowFirstPosition = Math.floor(randomPosition / tableWidth);
-            rowLastPosition = Math.floor(((randomPosition + boatLenght)-1) / tableWidth);
-            lastPosition = randomPosition+boatLenght;
-            if (rowFirstPosition === rowLastPosition && lastPosition <= (tableHeight*tableWidth)-1) { //Verifica se está na mesma linha e se a ultima posição está dentro do tabuleiro
+            rowLastPosition = Math.floor(((randomPosition + boatLenght) - 1) / tableWidth);
+            lastPosition = randomPosition + boatLenght;
+            if (rowFirstPosition === rowLastPosition && lastPosition <= (tableHeight * tableWidth) - 1) { //Verifica se está na mesma linha e se a ultima posição está dentro do tabuleiro
                 positionFound = true;
                 let pos = 0;
-                for (let i = randomPosition; i < (randomPosition+boatLenght); i++){
-                    if(positionsOcuppied.includes(i)){
+                for (let i = randomPosition; i < (randomPosition + boatLenght); i++) {
+                    if (positionsOcuppied.includes(i)) {
                         positionFound = false;
+                    } else {
+                        positions[pos] = i;
+                        pos++;
                     }
-                    positions[pos] = i;
-                    pos++;
-
                 }
             }
         } else {
             columnFirstPosition = Math.floor(randomPosition / tableHeight);
             columnLastPosition = Math.floor((randomPosition + (tableWidth * boatLenght)) / tableHeight) - 1; //contando a linha 0 como 1
-            if(columnLastPosition < tableHeight){
-                positionFound = true
+            if (columnLastPosition < tableHeight) {
+                positionFound = true;
                 let pos = 0;
-                for (let i = columnFirstPosition; i <= columnLastPosition; i++){
-                    if(positionsOcuppied.includes((randomPosition + (tableWidth*pos)))){
+                for (let i = columnFirstPosition; i <= columnLastPosition; i++) {
+                    if (positionsOcuppied.includes((randomPosition + (tableWidth * pos)))) {
                         positionFound = false;
+                    } else {
+                        positions[pos] = randomPosition + (tableWidth * pos);
+                        pos++;
                     }
-                    positions[pos] = randomPosition + (tableWidth*pos);
-                    pos++;
                 }
             }
         }
     } while (positionFound === false) ;
-    console.log("posições definidas " + positions + orientation);
+    console.log("posições definidas " + positions + " " + orientation + "\nPosições ocupadas: " + positionsOcuppied);
     return positions;
 }
 
@@ -109,11 +147,15 @@ function renderTable() {
 
             if (debugg === true) {
                 html += '<td>';
-                html += `<div class=${object}> ${spaceIndex} </div>`;
+                html += `<div class=${object}> ${spaceIndex}`;
+                html += `<input type="radio" name="boat" value="${spaceIndex}">`
+                html += `</div>`;
                 html += '</td>';
             } else {
                 html += '<td>';
-                html += `<div class=${object}> </div>`;
+                html += `<div class=${object}> ${spaceIndex}`;
+                html += `<input type="radio" name="boat" value="${spaceIndex}">`
+                html += `</div>`;
                 html += '</td>';
             }
         }
@@ -136,5 +178,3 @@ function checkColorOfIndex(spaceIndex) {
             return 'fire';
     }
 }
-
-start();
