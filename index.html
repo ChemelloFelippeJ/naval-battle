@@ -46,8 +46,19 @@
     </style>
 </head>
     <body>
+        <div>
+            <h1>Batalha Naval</h1>
+            <p>Jogo de batalha naval contra o computador</p>
+            <p>Ainda não foi implementado "Computador contra pessoa"</p>
+        </div>
         <div id="tableCanvas"></div>
-
+        <div>
+            <input type="button" value="Criar tabuleiro!" onclick="start()">
+            <input type="button" value="Definir tudo com Água!" onclick="createTableStructure()">
+            <input type="button" value="Definir Barcos" onclick="selectBoatPositions()">
+            <div id="sendButton"></div>
+            <input type="button" value="Renderizar tabuleiro!" onclick="renderTable()">
+        </div>
         <script src = "js.js"></script>
     </body>
 </html>
