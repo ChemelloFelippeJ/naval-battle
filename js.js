@@ -1,15 +1,18 @@
-let tableArray = [];
-let tableAiShots = [];
-let tableAiHit = [];
-let tableAiShotPredict = [];
-let positionsOcuppied = [];
-let tableHeight = 15;
-let tableWidth = 15;
+let tableArray;
+let tableAiShots;
+let tableAiHit;
+let tableAiShotPredict;
+let positionsOcuppied;
+let numberOfPlays;
+let numberOfHits;
+let tableHeight = 10;       //Tem que ser um tabuleiro quadrado
+let tableWidth = 10;
 let digits = ((tableWidth * tableHeight) - 1).toString().length;
 const debugg = true;
 const lenghtBoats = [2, 3, 5];
 let partsOfBoats = 0;
-let GameOver = false;
+let GameOver;
+
 for(let i = 0; i < lenghtBoats.length; i++){
     partsOfBoats += lenghtBoats[i];
 }
@@ -20,6 +23,15 @@ if(debugg){
 }
 
 function start() {
+    GameOver = false;
+    tableArray = [];
+    tableAiShots = [];
+    tableAiHit = [];
+    tableAiShotPredict = [];
+    positionsOcuppied = [];
+    numberOfPlays = 0;
+    numberOfHits = 0;
+
     createTableStructure();
     insertBoatInRandomPositions();
     renderTable();
@@ -69,7 +81,7 @@ function insertBoatInPredefinedPosition() {
 }
 
 function shot() {
-    console.log("Atirou");
+
     let boatPositions = document.getElementsByName('positions');
 
     for(let i = 0; i < boatPositions.length; i++){
@@ -81,6 +93,8 @@ function shot() {
             }
         }
     }
+
+    numberOfPlays++;
 
     renderTable();
     checkWinner();
@@ -95,9 +109,11 @@ function checkWinner(){
         }
     }
     console.log(count + " - " + partsOfBoats);
+    numberOfHits = count;
     if(count === partsOfBoats){
-        alert("ACABOU!!!");
         GameOver = true;
+        alert("ACABOU!!!");
+
     }
 }
 
@@ -107,10 +123,12 @@ function shotAi(){
 
     if(tableAiShotPredict.length === 0) {
         do {
+            console.log("Random")
             shotPosition = returnRandomPosition();
         } while (tableAiShots.includes(shotPosition) || shotPosition > (tableWidth * tableHeight)-1);
     }else{
         do {
+            console.log("Predict")
             shotPosition = tableAiShotPredict.shift();
         } while (tableAiShots.includes(shotPosition));
     }
@@ -125,6 +143,8 @@ function shotAi(){
     }else{
         tableArray[shotPosition] = 'S';
     }
+
+    numberOfPlays++;
 
     renderTable();
     checkWinner();
@@ -164,21 +184,12 @@ function insertPredictInTable(){
 }
 
 function autoPlay() {
-
-    function sleep(milliseconds) {
-        let start = new Date().getTime();
-        for (let i = 0; i < 1e7; i++) {
-            if ((new Date().getTime() - start) > milliseconds){
-                break;
-            }
+    //do {
+        shotAi();
+        if(!GameOver) {
+            setTimeout(autoPlay, 300);
         }
-    }
-
-    shotAi();
-    sleep(1000);
-    if(!GameOver)
-        autoPlay()
-
+    //}while(!GameOver)
 
 }
 
@@ -288,6 +299,10 @@ function renderTable() {
         html += '</tr>';
     }
     html += '</table>';
+
+    const counterHtml = `<p> ${numberOfPlays} Jogadas </p> <p> Acertou ${numberOfHits} Partes de ${partsOfBoats} </p>`;
+
+    document.querySelector('#counter').innerHTML = counterHtml;
     document.querySelector('#tableCanvas').innerHTML = html;
 
 }
