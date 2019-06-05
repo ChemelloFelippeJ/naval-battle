@@ -1,1 +1,2 @@
-Criar tiro 
+Pq só atualiza o html quando toda a funçao termina de executar
+como no autoplay
