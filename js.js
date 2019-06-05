@@ -1,12 +1,22 @@
 let tableArray = [];
 let positionsOcuppied = [];
-let tableHeight = 5;
-let tableWidth = 5;
+let tableHeight = 10;
+let tableWidth = 10;
 let digits = ((tableWidth * tableHeight) - 1).toString().length;
 console.log(digits);
-const debugg = true;
-const lenghtBoats = [1, 3, 5];
+const debugg = false;
+const lenghtBoats = [2, 3, 5];
+let partsOfBoats = 0;
 
+for(let i = 0; i < lenghtBoats.length; i++){
+    partsOfBoats += lenghtBoats[i];
+    console.log(partsOfBoats);
+}
+
+
+if(debugg){
+    // document.getElementsByClassName('debbug')
+}
 
 function start() {
     createTableStructure();
@@ -47,6 +57,7 @@ function selectBoatPositions() {
 }
 
 function insertBoatInPredefinedPosition() {
+    createTableStructure();
     let boatPositions = document.getElementsByName('boat');
 
     for (let i = 0; i < boatPositions.length; i++){
@@ -57,7 +68,35 @@ function insertBoatInPredefinedPosition() {
 }
 
 function shot() {
+    console.log("Atirou");
+    let boatPositions = document.getElementsByName('positions');
 
+    for(let i = 0; i < boatPositions.length; i++){
+        if(boatPositions[i].checked){
+            if(tableArray[i] === 'B'){
+                tableArray[i] = 'F';
+            }else{
+                tableArray[i] = 'S';
+            }
+        }
+    }
+
+    renderTable();
+    checkWinner();
+}
+
+function checkWinner(){
+    let count = 0;
+
+    for(let i = 0; i < tableArray.length; i++){
+        if(tableArray[i] === 'F'){
+            count++;
+        }
+    }
+    console.log(count + " - " + partsOfBoats);
+    if(count === partsOfBoats){
+        alert("ACABOU!!!");
+    }
 }
 
 function insertBoatInRandomPositions() {
@@ -148,13 +187,13 @@ function renderTable() {
             if (debugg === true) {
                 html += '<td>';
                 html += `<div class=${object}> ${spaceIndex}`;
-                html += `<input type="radio" name="boat" value="${spaceIndex}">`
+                html += `<input type="radio" name="positions" value="${spaceIndex}">`
                 html += `</div>`;
                 html += '</td>';
             } else {
                 html += '<td>';
                 html += `<div class=${object}> ${spaceIndex}`;
-                html += `<input type="radio" name="boat" value="${spaceIndex}">`
+                html += `<input type="radio" name="positions" value="${spaceIndex}">`
                 html += `</div>`;
                 html += '</td>';
             }
@@ -171,7 +210,11 @@ function checkColorOfIndex(spaceIndex) {
         case 'W':
             return 'water';
         case 'B':
-            return 'boat';
+            if(debugg) {
+                return 'boat';
+            }else{
+                return 'water';
+            }
         case 'S':
             return 'shot';
         case 'F':
