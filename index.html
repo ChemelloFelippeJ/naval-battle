@@ -26,7 +26,6 @@
         }
 
 
-
         .water {
             background-color: blue;
         }
@@ -35,30 +34,29 @@
             background-color: gray;
         }
 
-        .shot{
+        .shot {
             background-color: black;
         }
 
-        .fire{
+            .fire {
             background-color: red;
         }
 
     </style>
 </head>
-    <body>
-        <div>
-            <h1>Batalha Naval</h1>
-            <p>Jogo de batalha naval contra o computador</p>
-            <p>Ainda não foi implementado "Computador contra pessoa"</p>
-        </div>
-        <div id="tableCanvas"></div>
-        <div>
-            <input type="button" value="Criar tabuleiro!" onclick="start()">
-            <input type="button" value="Definir tudo com Água!" onclick="createTableStructure()">
-            <input type="button" value="Definir Barcos" onclick="selectBoatPositions()">
-            <div id="sendButton"></div>
-            <input type="button" value="Renderizar tabuleiro!" onclick="renderTable()">
-        </div>
-        <script src = "js.js"></script>
-    </body>
+<body>
+    <div>
+        <h1>Batalha Naval</h1>
+        <p>Jogo de batalha naval contra o computador</p>
+        <p>Ainda não foi implementado "Computador contra pessoa"</p>
+    </div>
+    <div id="tableCanvas"></div>
+    <div>
+        <input type="button" value="Iniciar Jogo" onclick="start()">
+        <input type="button" value="Atirar" onclick="shot()">
+        <input type="button" value="Selecionar Posição dos Barcos" onclick="selectBoatPositions()">
+        <div id="sendButton"></div>
+    </div>
+    <script src="js.js"></script>
+</body>
 </html>
