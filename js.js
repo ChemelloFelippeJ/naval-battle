@@ -1,16 +1,17 @@
 let tableArray = [];
+let tableAiShots = [];
+let tableAiHit = [];
+let tableAiShotPredict = [];
 let positionsOcuppied = [];
-let tableHeight = 10;
-let tableWidth = 10;
+let tableHeight = 15;
+let tableWidth = 15;
 let digits = ((tableWidth * tableHeight) - 1).toString().length;
-console.log(digits);
-const debugg = false;
+const debugg = true;
 const lenghtBoats = [2, 3, 5];
 let partsOfBoats = 0;
-
+let GameOver = false;
 for(let i = 0; i < lenghtBoats.length; i++){
     partsOfBoats += lenghtBoats[i];
-    console.log(partsOfBoats);
 }
 
 
@@ -96,7 +97,89 @@ function checkWinner(){
     console.log(count + " - " + partsOfBoats);
     if(count === partsOfBoats){
         alert("ACABOU!!!");
+        GameOver = true;
     }
+}
+
+function shotAi(){
+
+    let shotPosition;
+
+    if(tableAiShotPredict.length === 0) {
+        do {
+            shotPosition = returnRandomPosition();
+        } while (tableAiShots.includes(shotPosition) || shotPosition > (tableWidth * tableHeight)-1);
+    }else{
+        do {
+            shotPosition = tableAiShotPredict.shift();
+        } while (tableAiShots.includes(shotPosition));
+    }
+
+    console.log("Atirando em: " + shotPosition);
+    tableAiShots.push(shotPosition);
+
+    if (tableArray[shotPosition] === 'B'){
+        tableArray[shotPosition] = 'F';
+        tableAiHit.push(shotPosition);
+        shotPredict(shotPosition);
+    }else{
+        tableArray[shotPosition] = 'S';
+    }
+
+    renderTable();
+    checkWinner();
+
+}
+
+function shotPredict(position){
+    //Se a linha de posição for a mesma de posição + 1
+    if(Math.floor((position+1)/tableWidth) === Math.floor(position/tableWidth)){
+        tableAiShotPredict.push(position+1);
+    }
+
+    //Se a linha de posição for a mesma de posição - 1
+    if(Math.floor((position-1)/tableWidth) === Math.floor(position/tableWidth)){
+        tableAiShotPredict.push(position-1);
+    }
+
+    //Se a posição + uma linha estiver dentro do tabuleiro
+    if((position + tableWidth) < tableHeight*tableWidth){
+        tableAiShotPredict.push(position+tableWidth);
+    }
+
+    //Se a posição - uma linha estiver dentro do tabuleiro
+    if(position-tableWidth >= 0){
+        tableAiShotPredict.push(position-tableWidth);
+    }
+
+    // if(debugg){
+    //     insertPredictInTable();
+    // }
+}
+
+function insertPredictInTable(){
+    for(let i = 0; i < tableAiShotPredict.length; i++){
+        tableArray[tableAiShotPredict[i]] = 'P';
+    }
+}
+
+function autoPlay() {
+
+    function sleep(milliseconds) {
+        let start = new Date().getTime();
+        for (let i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds){
+                break;
+            }
+        }
+    }
+
+    shotAi();
+    sleep(1000);
+    if(!GameOver)
+        autoPlay()
+
+
 }
 
 function insertBoatInRandomPositions() {
@@ -116,16 +199,20 @@ function insertBoatInRandomPositions() {
 function returnOrientation() {
     switch (Math.round(Math.random())) {
         case 0:
+            console.log("Horizontal");
             return 'H';     //horizontal
         case 1:
+            console.log("Vertical");
             return 'V';     //vertical
     }
 }
 
+function returnRandomPosition() {
+    return Math.round(Math.random().toFixed(digits) * Math.pow(10, digits));
+}
+
 function returnStartPosition(boatLenght, orientation) {
-    function returnRandomPosition() {
-        return Math.round(Math.random().toFixed(digits) * Math.pow(10, digits));
-    }
+
 
     let randomPosition, lastPosition;
     let rowFirstPosition, rowLastPosition;
@@ -168,7 +255,7 @@ function returnStartPosition(boatLenght, orientation) {
             }
         }
     } while (positionFound === false) ;
-    console.log("posições definidas " + positions + " " + orientation + "\nPosições ocupadas: " + positionsOcuppied);
+    console.log("posições definidas " + positions + "\nPosições ocupadas: " + positionsOcuppied);
     return positions;
 }
 
