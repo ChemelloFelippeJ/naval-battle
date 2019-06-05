@@ -38,8 +38,12 @@
             background-color: black;
         }
 
-            .fire {
+        .fire {
             background-color: red;
+        }
+
+        .predict {
+            background-color: greenyellow;
         }
 
     </style>
@@ -54,6 +58,8 @@
     <div>
         <input type="button" value="Iniciar Jogo" onclick="start()">
         <input type="button" value="Atirar" onclick="shot()">
+        <input type="button" value="IA Atirar" onclick="shotAi()">
+        <input type="button" value="Auto Play" onclick="autoPlay()">
         <input type="button" value="Selecionar Posição dos Barcos" onclick="selectBoatPositions()">
         <div id="sendButton"></div>
     </div>
