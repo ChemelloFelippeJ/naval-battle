@@ -1,4 +1,6 @@
 let tableArray;
+let tableArrayNumber;
+let tableArrayNumberTest;
 let tableAiShots;
 let tableAiHit;
 let tableAiShotPredict;
@@ -13,18 +15,20 @@ const lenghtBoats = [2, 3, 5];
 let partsOfBoats = 0;
 let GameOver;
 
-for(let i = 0; i < lenghtBoats.length; i++){
+for (let i = 0; i < lenghtBoats.length; i++) {
     partsOfBoats += lenghtBoats[i];
 }
 
 
-if(debugg){
+if (debugg) {
     // document.getElementsByClassName('debbug')
 }
 
 function start() {
     GameOver = false;
     tableArray = [];
+    tableArrayNumber = [];
+    tableArrayNumberTest = [];
     tableAiShots = [];
     tableAiHit = [];
     tableAiShotPredict = [];
@@ -37,11 +41,35 @@ function start() {
     renderTable();
 }
 
+async function learnLinear() {
+    const model = tf.sequential();
+    model.add(tf.layers.dense({units: 1, inputShape: [1]}));
+
+    model.compile({
+        loss: 'meanSquaredError',
+        optimizer: 'sgd'
+    });
+console.log(tableArrayNumber);
+console.log(tableArrayNumberTest);
+    const position = tf.tensor2d([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17], [18, 1]);
+    const object = tf.tensor2d([0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34], [18, 1]);
+
+    await model.fit(position, object, {epochs: 10000});
+
+    const log = model.predict(tf.tensor2d([1], [1,1]));
+
+    console.log(log);
+
+    document.getElementById('counter').innerText = log;
+}
+
 function createTableStructure() {
     const numberOfSpaces = tableHeight * tableWidth;
 
     for (let i = 0; i < numberOfSpaces; i++) {
-        tableArray[i] = 'W';                    //set with water
+        tableArray[i] = '1';                    //set with water
+        tableArrayNumber[i] = i;
+        tableArrayNumberTest[i] = i+i;
     }
     // console.log("Water: " + water + "\nBoat: " + boat + "\nShot: " + shot + "\nFire: " + fire);
 }
@@ -73,9 +101,9 @@ function insertBoatInPredefinedPosition() {
     createTableStructure();
     let boatPositions = document.getElementsByName('boat');
 
-    for (let i = 0; i < boatPositions.length; i++){
-        if(boatPositions[i].checked){
-            tableArray[i] = 'B';
+    for (let i = 0; i < boatPositions.length; i++) {
+        if (boatPositions[i].checked) {
+            tableArray[i] = '2';
         }
     }
 }
@@ -84,12 +112,12 @@ function shot() {
 
     let boatPositions = document.getElementsByName('positions');
 
-    for(let i = 0; i < boatPositions.length; i++){
-        if(boatPositions[i].checked){
-            if(tableArray[i] === 'B'){
-                tableArray[i] = 'F';
-            }else{
-                tableArray[i] = 'S';
+    for (let i = 0; i < boatPositions.length; i++) {
+        if (boatPositions[i].checked) {
+            if (tableArray[i] === '2') {
+                tableArray[i] = '4';
+            } else {
+                tableArray[i] = '3';
             }
         }
     }
@@ -100,33 +128,33 @@ function shot() {
     checkWinner();
 }
 
-function checkWinner(){
+function checkWinner() {
     let count = 0;
 
-    for(let i = 0; i < tableArray.length; i++){
-        if(tableArray[i] === 'F'){
+    for (let i = 0; i < tableArray.length; i++) {
+        if (tableArray[i] === '4') {
             count++;
         }
     }
     console.log(count + " - " + partsOfBoats);
     numberOfHits = count;
-    if(count === partsOfBoats){
+    if (count === partsOfBoats) {
         GameOver = true;
         alert("ACABOU!!!");
 
     }
 }
 
-function shotAi(){
+function shotAi() {
 
     let shotPosition;
 
-    if(tableAiShotPredict.length === 0) {
+    if (tableAiShotPredict.length === 0) {
         do {
             console.log("Random")
             shotPosition = returnRandomPosition();
-        } while (tableAiShots.includes(shotPosition) || shotPosition > (tableWidth * tableHeight)-1);
-    }else{
+        } while (tableAiShots.includes(shotPosition) || shotPosition > (tableWidth * tableHeight) - 1);
+    } else {
         do {
             console.log("Predict")
             shotPosition = tableAiShotPredict.shift();
@@ -136,12 +164,12 @@ function shotAi(){
     console.log("Atirando em: " + shotPosition);
     tableAiShots.push(shotPosition);
 
-    if (tableArray[shotPosition] === 'B'){
-        tableArray[shotPosition] = 'F';
+    if (tableArray[shotPosition] === '2') {
+        tableArray[shotPosition] = '4';
         tableAiHit.push(shotPosition);
         shotPredict(shotPosition);
-    }else{
-        tableArray[shotPosition] = 'S';
+    } else {
+        tableArray[shotPosition] = '3';
     }
 
     numberOfPlays++;
@@ -151,25 +179,25 @@ function shotAi(){
 
 }
 
-function shotPredict(position){
+function shotPredict(position) {
     //Se a linha de posição for a mesma de posição + 1
-    if(Math.floor((position+1)/tableWidth) === Math.floor(position/tableWidth)){
-        tableAiShotPredict.push(position+1);
+    if (Math.floor((position + 1) / tableWidth) === Math.floor(position / tableWidth)) {
+        tableAiShotPredict.push(position + 1);
     }
 
     //Se a linha de posição for a mesma de posição - 1
-    if(Math.floor((position-1)/tableWidth) === Math.floor(position/tableWidth)){
-        tableAiShotPredict.push(position-1);
+    if (Math.floor((position - 1) / tableWidth) === Math.floor(position / tableWidth)) {
+        tableAiShotPredict.push(position - 1);
     }
 
     //Se a posição + uma linha estiver dentro do tabuleiro
-    if((position + tableWidth) < tableHeight*tableWidth){
-        tableAiShotPredict.push(position+tableWidth);
+    if ((position + tableWidth) < tableHeight * tableWidth) {
+        tableAiShotPredict.push(position + tableWidth);
     }
 
     //Se a posição - uma linha estiver dentro do tabuleiro
-    if(position-tableWidth >= 0){
-        tableAiShotPredict.push(position-tableWidth);
+    if (position - tableWidth >= 0) {
+        tableAiShotPredict.push(position - tableWidth);
     }
 
     // if(debugg){
@@ -177,18 +205,18 @@ function shotPredict(position){
     // }
 }
 
-function insertPredictInTable(){
-    for(let i = 0; i < tableAiShotPredict.length; i++){
+function insertPredictInTable() {
+    for (let i = 0; i < tableAiShotPredict.length; i++) {
         tableArray[tableAiShotPredict[i]] = 'P';
     }
 }
 
 function autoPlay() {
     //do {
-        shotAi();
-        if(!GameOver) {
-            setTimeout(autoPlay, 300);
-        }
+    shotAi();
+    if (!GameOver) {
+        setTimeout(autoPlay, 300);
+    }
     //}while(!GameOver)
 
 }
@@ -200,7 +228,7 @@ function insertBoatInRandomPositions() {
 
 
         for (let j = 0; j < boatPositions.length; j++) {
-            tableArray[boatPositions[j]] = 'B';
+            tableArray[boatPositions[j]] = '2';
             positionsOcuppied.push(boatPositions[j]);
         }
 
@@ -309,17 +337,17 @@ function renderTable() {
 
 function checkColorOfIndex(spaceIndex) {
     switch (tableArray[spaceIndex]) {
-        case 'W':
+        case '1':
             return 'water';
-        case 'B':
-            if(debugg) {
+        case '2':
+            if (debugg) {
                 return 'boat';
-            }else{
+            } else {
                 return 'water';
             }
-        case 'S':
+        case '3':
             return 'shot';
-        case 'F':
+        case '4':
             return 'fire';
     }
 }
