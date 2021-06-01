@@ -12,7 +12,7 @@ const debugg = true;
 const lenghtBoats = [2, 3, 5];
 let partsOfBoats = 0;
 let GameOver;
-
+console.log("oi")
 for(let i = 0; i < lenghtBoats.length; i++){
     partsOfBoats += lenghtBoats[i];
 }
